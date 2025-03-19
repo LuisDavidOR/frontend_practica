@@ -4,16 +4,25 @@ import Login from "./views/Login";
 import Inicio from "./views/Inicio";
 import Servicios from "./views/Servicios";
 import './App.css';
+import Encabezado from "./components/encabezado/Encabezado";
+import Clientes from "./views/Clientes";
+import Productos from "./views/Productos";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
+      <main className="margen-superior-main">
+      <Encabezado />
+        <Routes>
 
-        <Route path="/" element={<Login />} />
-        <Route path="/inicio" element={<Inicio />} />
-        <Route path="/servicios" element={<Servicios />} />
-      </Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/inicio" element={<Inicio />} />
+          <Route path="/servicios" element={<Servicios />} />
+          <Route path="/clientes" element={<Clientes />} />
+          <Route path="/productos" element={<Productos />} />
+
+        </Routes>
+      </main>
     </Router>
   );
 };
