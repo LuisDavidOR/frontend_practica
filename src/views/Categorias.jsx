@@ -1,32 +1,32 @@
 // Importaciones necesarias para la vista
 import React, { useState, useEffect } from 'react';
-import TablaClientes from '../components/clientes/TablaClientes';
+import TablaCategorias from '../components/categorias/TablaCategorias'; // Importa el componente de tabla
 import { Container } from "react-bootstrap";
 
-// Declaración del componente Clientes
-const Clientes = () => {
+// Declaración del componente Categorias
+const Categorias = () => {
   // Estados para manejar los datos, carga y errores
-  const [listaClientes, setListaClientes] = useState([]); // Almacena los datos de la API
+  const [listaCategorias, setListaCategorias] = useState([]); // Almacena los datos de la API
   const [cargando, setCargando] = useState(true);            // Controla el estado de carga
   const [errorCarga, setErrorCarga] = useState(null);        // Maneja errores de la petición
 
   // Lógica de obtención de datos con useEffect
   useEffect(() => {
-    const obtenerClientes = async () => { // Método renombrado a español
+    const obtenerCategorias = async () => { // Método renombrado a español
       try {
-        const respuesta = await fetch('http://127.0.0.1:3000/api/clientes');
+        const respuesta = await fetch('http://localhost:3000/api/categorias');
         if (!respuesta.ok) {
-          throw new Error('Error al cargar los clientes');
+          throw new Error('Error al cargar las categorías');
         }
         const datos = await respuesta.json();
-        setListaClientes(datos);    // Actualiza el estado con los datos
+        setListaCategorias(datos);    // Actualiza el estado con los datos
         setCargando(false);           // Indica que la carga terminó
       } catch (error) {
         setErrorCarga(error.message); // Guarda el mensaje de error
         setCargando(false);           // Termina la carga aunque haya error
       }
     };
-    obtenerClientes();            // Ejecuta la función al montar el componente
+    obtenerCategorias();            // Ejecuta la función al montar el componente
   }, []);                           // Array vacío para que solo se ejecute una vez
 
   // Renderizado de la vista
@@ -34,11 +34,11 @@ const Clientes = () => {
     <>
       <Container className="mt-5">
         <br />
-        <h4>Clientes</h4>
+        <h4>Categorías</h4>
 
-        {/* Pasa los estados como props al componente TablaClientess */}
-        <TablaClientes 
-          clientes={listaClientes} 
+        {/* Pasa los estados como props al componente TablaCategorias */}
+        <TablaCategorias 
+          categorias={listaCategorias} 
           cargando={cargando} 
           error={errorCarga} 
         />
@@ -48,4 +48,4 @@ const Clientes = () => {
 };
 
 // Exportación del componente
-export default Clientes;
+export default Categorias;
