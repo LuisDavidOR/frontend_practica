@@ -108,4 +108,4 @@ const Categorias = () => {
 };
 
 // Exportación del componente
-export default Categorias;
+export default Categorias;  
