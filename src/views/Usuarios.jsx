@@ -1,7 +1,8 @@
 // Importaciones necesarias para la vista
 import React, { useState, useEffect } from 'react';
 import TablaUsuarios from '../components/usuarios/TablaUsuarios';
-import { Container } from "react-bootstrap";
+import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 // Declaración del componente Usuarios
 const Usuarios = () => {
@@ -9,6 +10,9 @@ const Usuarios = () => {
   const [listaUsuarios, setListaUsuarios] = useState([]); // Almacena los datos de la API
   const [cargando, setCargando] = useState(true);            // Controla el estado de carga
   const [errorCarga, setErrorCarga] = useState(null);        // Maneja errores de la petición
+
+  const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
 
   // Lógica de obtención de datos con useEffect
   useEffect(() => {
@@ -20,6 +24,7 @@ const Usuarios = () => {
         }
         const datos = await respuesta.json();
         setListaUsuarios(datos);    // Actualiza el estado con los datos
+        setUsuariosFiltrados(datos);
         setCargando(false);           // Indica que la carga terminó
       } catch (error) {
         setErrorCarga(error.message); // Guarda el mensaje de error
@@ -29,6 +34,18 @@ const Usuarios = () => {
     obtenerUsuarios();            // Ejecuta la función al montar el componente
   }, []);                           // Array vacío para que solo se ejecute una vez
 
+  const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+    
+    const filtrados = listaUsuarios.filter(
+      (usuario) =>
+        usuario.usuario.toLowerCase().includes(texto) ||
+        usuario.contraseña.toLowerCase().includes(texto)
+    );
+    setUsuariosFiltrados(filtrados);
+  };
+
   // Renderizado de la vista
   return (
     <>
@@ -36,9 +53,24 @@ const Usuarios = () => {
         <br />
         <h4>Usuarios</h4>
 
+        <Row>
+          <Col lg={2} md={4} sm={4} xs={5}>
+            <Button variant="primary" style={{ width: "100%" }}>
+              Nuevo Usuario
+            </Button>
+          </Col>
+
+          <Col lg={5} md={8} sm={8} xs={7}>
+            <CuadroBusquedas
+              textoBusqueda={textoBusqueda}
+              manejarCambioBusqueda={manejarCambioBusqueda}
+            />
+          </Col>
+        </Row>
+
         {/* Pasa los estados como props al componente TablaClientess */}
         <TablaUsuarios 
-          usuarios={listaUsuarios} 
+          usuarios={usuariosFiltrados} 
           cargando={cargando} 
           error={errorCarga} 
         />

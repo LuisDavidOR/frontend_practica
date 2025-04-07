@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import TablaCategorias from '../components/categorias/TablaCategorias'; // Importa el componente de tabla
 import ModalRegistroCategoria from '../components/categorias/ModalRegistroCategoria';
-import { Container, Button } from "react-bootstrap";
+import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
+import { Container, Button, Row, Col } from "react-bootstrap";
 
 // Declaración del componente Categorias
 const Categorias = () => {
@@ -10,11 +11,15 @@ const Categorias = () => {
   const [listaCategorias, setListaCategorias] = useState([]); // Almacena los datos de la API
   const [cargando, setCargando] = useState(true);            // Controla el estado de carga
   const [errorCarga, setErrorCarga] = useState(null);        // Maneja errores de la petición
+  
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nuevaCategoria, setNuevaCategoria] = useState({
     nombre_categoria: '',
     descripcion_categoria: ''
   });
+
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
 
   const obtenerCategorias = async () => { // Método renombrado a español
     try {
@@ -24,6 +29,7 @@ const Categorias = () => {
       }
       const datos = await respuesta.json();
       setListaCategorias(datos);    // Actualiza el estado con los datos
+      setCategoriasFiltradas(datos);
       setCargando(false);           // Indica que la carga terminó
     } catch (error) {
       setErrorCarga(error.message); // Guarda el mensaje de error
@@ -74,6 +80,18 @@ const Categorias = () => {
       setErrorCarga(error.message);
     }
   };
+
+  const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+    
+    const filtradas = listaCategorias.filter(
+      (categoria) =>
+        categoria.nombre_categoria.toLowerCase().includes(texto) ||
+        categoria.descripcion_categoria.toLowerCase().includes(texto)
+    );
+    setCategoriasFiltradas(filtradas);
+  };
   
 
   // Renderizado de la vista
@@ -83,17 +101,30 @@ const Categorias = () => {
         <br />
         <h4>Categorías</h4>
 
-        <Button variant="primary" onClick={() => setMostrarModal(true)}>
-          Nueva Categoría
-        </Button>
-        <br/><br/>
+        <Row>
+          <Col lg={2} md={4} sm={4} xs={5}>
+            <Button variant="primary" onClick={() => setMostrarModal(true)} style={{ width: "100%" }}>
+              Nueva Categoría
+            </Button>
+          </Col>
+
+          <Col lg={5} md={8} sm={8} xs={7}>
+            <CuadroBusquedas
+              textoBusqueda={textoBusqueda}
+              manejarCambioBusqueda={manejarCambioBusqueda}
+            />
+          </Col>
+        </Row>
+
+        <br/>
 
         {/* Pasa los estados como props al componente TablaCategorias */}
         <TablaCategorias 
-          categorias={listaCategorias} 
+          categorias={categoriasFiltradas} 
           cargando={cargando} 
           error={errorCarga} 
         />
+
         <ModalRegistroCategoria
           mostrarModal={mostrarModal}
           setMostrarModal={setMostrarModal}
