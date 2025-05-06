@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TablaProductos from '../components/productos/TablaProductos'; // Asumiendo que tienes este componente
 import ModalRegistroProducto from '../components/productos/ModalRegistroProducto'; // Asumiendo que tienes este componente
+import ModalEliminacionProducto from '../components/productos/ModalEliminacionProducto';
 import { Container, Button } from "react-bootstrap";
 
 const Productos = () => {
@@ -31,6 +32,9 @@ const Productos = () => {
       setCargando(false);
     }
   };
+
+  const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+  const [productoAEliminar, setProductoAEliminar] = useState(null);
 
   // Obtener categorías para el dropdown
   const obtenerCategorias = async () => {
@@ -91,6 +95,32 @@ const Productos = () => {
     }
   };
 
+  const eliminarProducto = async () => {
+    if (!productoAEliminar) return;
+
+    try {
+      const respuesta = await fetch(`http://127.0.0.1:3000/api/eliminarproducto/${productoAEliminar.id_producto}`, {
+        method: 'DELETE',
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al eliminar el producto');
+      }
+
+      await obtenerProductos(); // Refresca la lista
+      setMostrarModalEliminacion(false);
+      setProductoAEliminar(null);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
+  const abrirModalEliminacion = (producto) => {
+    setProductoAEliminar(producto);
+    setMostrarModalEliminacion(true);
+  };
+
   return (
     <Container className="mt-5">
       <br />
@@ -104,9 +134,10 @@ const Productos = () => {
         productos={listaProductos} 
         cargando={cargando} 
         error={errorCarga} 
+        abrirModalEliminacion={abrirModalEliminacion} // Método para abrir modal de eliminación
       />
 
-        <ModalRegistroProducto
+      <ModalRegistroProducto
         mostrarModal={mostrarModal}
         setMostrarModal={setMostrarModal}
         nuevoProducto={nuevoProducto}
@@ -114,6 +145,12 @@ const Productos = () => {
         agregarProducto={agregarProducto}
         errorCarga={errorCarga}
         categorias={listaCategorias}
+      />
+
+      <ModalEliminacionProducto
+        mostrarModalEliminacion={mostrarModalEliminacion}
+        setMostrarModalEliminacion={setMostrarModalEliminacion}
+        eliminarProducto={eliminarProducto}
       />
       
     </Container>

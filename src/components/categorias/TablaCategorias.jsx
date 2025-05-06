@@ -1,6 +1,6 @@
 // Importaciones necesarias para el componente visual
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import Paginacion from '../ordenamiento/Paginacion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -12,7 +12,9 @@ const TablaCategorias = ({
     totalElementos,
     elementosPorPagina,
     paginaActual,
-    establecerPaginaActual
+    establecerPaginaActual,
+    abrirModalEliminacion,
+    abrirModalEdicion
     }) => {
   
   // Renderizado condicional según el estado recibido por props
@@ -35,6 +37,7 @@ const TablaCategorias = ({
           <th>ID Categoría</th>
           <th>Nombre</th>
           <th>Descripción</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -43,6 +46,24 @@ const TablaCategorias = ({
             <td>{categoria.id_categoria}</td>
             <td>{categoria.nombre_categoria}</td>
             <td>{categoria.descripcion_categoria}</td>
+            <td>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => abrirModalEdicion(categoria)}
+                >
+                  <i className="bi bi-pencil"></i>
+                </Button>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => abrirModalEliminacion(categoria)}
+                >
+                  <i className="bi bi-trash"></i>
+                </Button>
+              </td>
           </tr>
         ))}
       </tbody>
