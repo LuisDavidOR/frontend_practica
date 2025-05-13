@@ -1,9 +1,20 @@
 // Importaciones necesarias para el componente visual
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
+import Paginacion from '../ordenamiento/Paginacion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const TablaProductos = ({ productos, cargando, error, abrirModalEliminacion }) => {
+const TablaProductos = ({
+  productos,
+  cargando,
+  error,
+  totalElementos,
+  elementosPorPagina,
+  paginaActual,
+  establecerPaginaActual,
+  abrirModalEliminacion,
+  abrirModalEdicion
+}) => {
 
   if (cargando) {
     return <div>Cargando productos...</div>; // Muestra mensaje mientras carga
@@ -11,6 +22,10 @@ const TablaProductos = ({ productos, cargando, error, abrirModalEliminacion }) =
 
   // Renderizado de la tabla con los datos recibidos
   return (
+    <div
+    className="d-flex flex-column justify-content-between"
+    style={{ minHeight: "60vh" }} // ajusta el valor si querés más o menos altura mínima
+    >
     <Table striped bordered hover responsive>
       <thead>
         <tr>
@@ -35,14 +50,24 @@ const TablaProductos = ({ productos, cargando, error, abrirModalEliminacion }) =
             <td>{producto.stock}</td>
             <td>
               {producto.imagen ? (
-                <a href={producto.imagen} target="_blank" rel="noopener noreferrer">
-                  Ver imagen
-                </a>
+                <img
+                  src={`data:image/png;base64,${producto.imagen}`}
+                  alt={producto.nombre_producto}
+                  style={{ maxWidth: '100px' }}
+                />
               ) : (
                 'Sin imagen'
               )}
             </td>
             <td>
+              <Button
+                  variant="outline-primary"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => abrirModalEdicion(producto)}
+                >
+                  <i className="bi bi-pencil"></i>
+                </Button>
               <Button
                 variant="outline-danger"
                 size="sm"
@@ -56,6 +81,16 @@ const TablaProductos = ({ productos, cargando, error, abrirModalEliminacion }) =
         ))}
       </tbody>
     </Table>
+    {/* Paginación fijada abajo del contenedor de la tabla */}
+    <div className="mt-auto">
+      <Paginacion
+        elementosPorPagina={elementosPorPagina}
+        totalElementos={totalElementos}
+        paginaActual={paginaActual}
+        establecerPaginaActual={establecerPaginaActual}
+      />
+    </div>
+  </div>
   );
 };
 
