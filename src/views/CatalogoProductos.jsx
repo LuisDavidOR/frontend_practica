@@ -28,6 +28,7 @@ const CatalogoProductos = () => {
   if (cargando) return <div>Cargando...</div>;
   if (errorCarga) return <div>Error: {errorCarga}</div>;
 
+
   return (
     <Container className="mt-5">
       <h4>Catálogo de Productos</h4>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import TablaClientes from '../components/clientes/TablaClientes';
 import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
+import ModalRegistroClientes from '../components/clientes/ModalRegistroClientes';
 import { Container, Row, Col, Button } from "react-bootstrap";
 
 // Declaración del componente Clientes
@@ -13,11 +14,19 @@ const Clientes = () => {
 
   const [clientesFiltrados, setClientesFiltrados] = useState([]);
   const [textoBusqueda, setTextoBusqueda] = useState("");
-  
 
-  // Lógica de obtención de datos con useEffect
-  useEffect(() => {
-    const obtenerClientes = async () => { // Método renombrado a español
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [nuevoCliente, setNuevoCliente] = useState({
+    primer_nombre: '',
+    segundo_nombre: '',
+    primer_apellido: '',
+    segundo_apellido: '',
+    celular: '',
+    direccion: '',
+    cedula: ''
+  });
+
+      const obtenerClientes = async () => { // Método renombrado a español
       try {
         const respuesta = await fetch('http://127.0.0.1:3000/api/clientes');
         if (!respuesta.ok) {
@@ -32,8 +41,55 @@ const Clientes = () => {
         setCargando(false);           // Termina la carga aunque haya error
       }
     };
+  
+
+  // Lógica de obtención de datos con useEffect
+  useEffect(() => {
     obtenerClientes();            // Ejecuta la función al montar el componente
   }, []);                           // Array vacío para que solo se ejecute una vez
+
+  // Maneja los cambios en los inputs del modal
+  const manejarCambioInput = (e) => {
+    const { name, value } = e.target;
+    setNuevoCliente(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Manejo la inserción de una nueva categoría
+  const agregarCliente = async () => {
+
+    if (!nuevoCliente.primer_nombre || !nuevoCliente.segundo_nombre || 
+        !nuevoCliente.primer_apellido || !nuevoCliente.segundo_apellido || 
+        !nuevoCliente.celular || !nuevoCliente.direccion || !nuevoCliente.cedula) {
+    setErrorCarga("Por favor, completa todos los campos antes de guardar.");
+    return;
+    }
+
+    try {
+      const respuesta = await fetch('http://127.0.0.1:3000/api/registrarcliente', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nuevoCliente),
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al agregar el cliente');
+      }
+
+      await obtenerClientes(); // Refresca toda la lista desde el servidor
+      setNuevoCliente({ primer_nombre: '', segundo_nombre: '', primer_apellido: '', segundo_apellido: '',
+                        celular: '', direccion: '', cedula: ''});
+      setMostrarModal(false);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
 
   const manejarCambioBusqueda = (e) => {
     const texto = e.target.value.toLowerCase();
@@ -61,7 +117,7 @@ const Clientes = () => {
 
         <Row>
           <Col lg={2} md={4} sm={4} xs={5}>
-            <Button variant="primary" style={{ width: "100%" }}>
+            <Button variant="primary" onClick={() => setMostrarModal(true)} style={{ width: "100%" }}>
               Nuevo Cliente
             </Button>
           </Col>
@@ -79,6 +135,15 @@ const Clientes = () => {
           clientes={clientesFiltrados} 
           cargando={cargando} 
           error={errorCarga} 
+        />
+
+        <ModalRegistroClientes
+          mostrarModal={mostrarModal}
+          setMostrarModal={setMostrarModal}
+          nuevoCliente={nuevoCliente}
+          manejarCambioInput={manejarCambioInput}
+          agregarCliente={agregarCliente}
+          errorCarga={errorCarga}
         />
       </Container>
     </>

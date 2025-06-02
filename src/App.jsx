@@ -17,9 +17,11 @@ import Dashboard from "./views/Dashboard";
 
 const App = () => {
   return (
+    
     <Router>
       <main className="margen-superior-main">
       <Encabezado />
+      
         <Routes>
 
           <Route path="/" element={<Login />} />
@@ -37,6 +39,7 @@ const App = () => {
 
         </Routes>
       </main>
+      
     </Router>
   );
 };
