@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas, NavDropdown} from "react-bootstrap";
-import logo from "/vite.svg"; // Importación del logo de la ferretería
+import logo from "../../assets/ferreteria.png"; // Importación del logo de la ferretería
 import "bootstrap-icons/font/bootstrap-icons.css"; // Importación de íconos de Bootstrap
 import "../../App.css"; // Estilos personalizados de la aplicación
 
@@ -77,6 +77,11 @@ const Encabezado = () => {
           <Offcanvas.Body>
             {/* Navegación */}
             <Nav className="justify-content-end flex-grow-1 pe-3">
+
+              {estaLogueado ? (
+                <>
+                
+
               {/* Opción de navegación a Inicio */}
               <Nav.Link
                 onClick={() => navegarA("/inicio")}
@@ -191,6 +196,18 @@ const Encabezado = () => {
                 <strong>DashBoard</strong>
               </Nav.Link>
 
+              </>
+
+              ) : (
+                //Opciones visibles solo si el usuario está logueado
+                <Nav.Link
+                onClick={() => navegarA("/")}
+                className={estaColapsado ? "text-black" : "text-white"}
+              >
+                <i className="bi bi-bar-chart-line-fill me-2"></i>
+                <strong>Iniciar Sesión</strong>
+              </Nav.Link>
+              )}
 
               {/* Lógica condicional para mostrar Cerrar Sesión o Iniciar Sesión */}
               {estaLogueado ? (
@@ -204,12 +221,7 @@ const Encabezado = () => {
               ) : (
                 ubicacion.pathname === "/" && (
                   // Opción de iniciar sesión (solo en la ruta raíz)
-                  <Nav.Link
-                    onClick={() => navegarA("/")}
-                    className={estaColapsado ? "text-black" : "text-white"}
-                  >
-                    Iniciar Sesión
-                  </Nav.Link>
+                  <br />
                 )
               )}
             </Nav>

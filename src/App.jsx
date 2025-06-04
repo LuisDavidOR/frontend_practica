@@ -14,31 +14,37 @@ import Compras from "./views/Compras";
 import CatalogoProductos from "./views/CatalogoProductos";
 import Estadisticas from "./views/Estadisticas";
 import Dashboard from "./views/Dashboard";
+import RutaProtegida from "./components/rutas/RutaProtegida";
+import PiePagina from "./components/infopie/PiePagina";
 
 const App = () => {
   return (
     
     <Router>
-      <main className="margen-superior-main">
-      <Encabezado />
+      <div className="app-wrapper">
+        <Encabezado />
+
+      <main className="margen-superior-main content">
       
         <Routes>
 
           <Route path="/" element={<Login />} />
-          <Route path="/inicio" element={<Inicio />} />
-          <Route path="/servicios" element={<Servicios />} />
-          <Route path="/clientes" element={<Clientes />} />
-          <Route path="/productos" element={<Productos />} />
-          <Route path="/categorias" element={<Categorias />} />
-          <Route path="/usuarios" element={<Usuarios />} />
-          <Route path="/ventas" element={<Ventas />} />
-          <Route path="/compras" element={<Compras />} />
-          <Route path="/catalogo" element={<CatalogoProductos />} />
-          <Route path="/estadistica" element={<Estadisticas />} />
-          <Route path="/dashboard" element={<Dashboard />} />
 
+          <Route path="/inicio" element={<RutaProtegida vista={<Inicio />} />} />
+          <Route path="/servicios" element={<RutaProtegida vista={<Servicios />} />} />
+          <Route path="/clientes" element={<RutaProtegida vista={<Clientes />} />} />
+          <Route path="/productos" element={<RutaProtegida vista={<Productos />} />} />
+          <Route path="/categorias" element={<RutaProtegida vista={<Categorias />} />} />
+          <Route path="/usuarios" element={<RutaProtegida vista={<Usuarios />} />} />
+          <Route path="/ventas" element={<RutaProtegida vista={<Ventas />} />} />
+          <Route path="/compras" element={<RutaProtegida vista={<Compras />} />} />
+          <Route path="/catalogo" element={<RutaProtegida vista={<CatalogoProductos />} />} />
+          <Route path="/estadistica" element={<RutaProtegida vista={<Estadisticas />} />} />
+          <Route path="/dashboard" element={<RutaProtegida vista={<Dashboard />} />} />
         </Routes>
-      </main>
+        </main>
+        <PiePagina />
+        </div>
       
     </Router>
   );

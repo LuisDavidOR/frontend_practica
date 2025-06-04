@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container } from "react-bootstrap";
+import { Container, Image } from "react-bootstrap";
+import Portada from "../assets/portada.jpg"
+import Proposito from "../components/inicio/Proposito";
 
 const Inicio = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -28,8 +30,8 @@ const Inicio = () => {
   return (
     <Container>
       <h1>¡Bienvenido, {nombreUsuario}!</h1>
-      <p>Estás en la página de inicio.</p>
-      <button onClick={cerrarSesion}>Cerrar Sesión</button>
+      <Image src={Portada} fluid rounded />
+      <Proposito />
     </Container>
   );
 };
