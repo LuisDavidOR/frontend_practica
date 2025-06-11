@@ -1,6 +1,8 @@
 // Importaciones necesarias para la vista
 import React, { useState, useEffect } from 'react';
 import TablaClientes from '../components/clientes/TablaClientes';
+import ModalEdicionCliente from '../components/clientes/ModalEdicionClientes';
+import ModalEliminacionCliente from '../components/clientes/ModalEliminacionClientes';
 import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
 import ModalRegistroClientes from '../components/clientes/ModalRegistroClientes';
 import { Container, Row, Col, Button } from "react-bootstrap";
@@ -25,6 +27,18 @@ const Clientes = () => {
     direccion: '',
     cedula: ''
   });
+
+  //Paginación
+  const [paginaActual, establecerPaginaActual] = useState(1);
+  const elementosPorPagina = 3; // Número de elementos por página
+
+  //Eliminación
+  const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+  const [clienteAEliminar, setClienteAEliminar] = useState(null);
+
+  //Edición
+  const [clienteEditado, setClienteEditado] = useState(null);
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
 
       const obtenerClientes = async () => { // Método renombrado a español
       try {
@@ -94,6 +108,7 @@ const Clientes = () => {
   const manejarCambioBusqueda = (e) => {
     const texto = e.target.value.toLowerCase();
     setTextoBusqueda(texto);
+    establecerPaginaActual(1);
     
     const filtrados = listaClientes.filter(
       (cliente) =>
@@ -106,6 +121,91 @@ const Clientes = () => {
         cliente.cedula.toLowerCase().includes(texto)
     );
     setClientesFiltrados(filtrados);
+  };
+
+  // Calcular elementos paginados
+  const clientesPaginados = clientesFiltrados.slice(
+    (paginaActual - 1) * elementosPorPagina,
+    paginaActual * elementosPorPagina
+  );
+
+  const eliminarCliente = async () => {
+    if (!clienteAEliminar) return;
+
+    try {
+      const respuesta = await fetch(`http://127.0.0.1:3000/api/eliminarcliente/${clienteAEliminar.id_cliente}`, {
+        method: 'DELETE',
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al eliminar el cliente');
+      }
+
+      await obtenerClientes(); // Refresca la lista
+      setMostrarModalEliminacion(false);
+      establecerPaginaActual(1); // Regresa a la primera página
+      setClienteAEliminar(null);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
+  const abrirModalEliminacion = (cliente) => {
+    setClienteAEliminar(cliente);
+    setMostrarModalEliminacion(true);
+  };
+
+  const manejarCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
+    setClienteEditado(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const actualizarCliente = async () => {
+    if (!clienteEditado?.primer_nombre || !clienteEditado?.segundo_nombre ||
+        !clienteEditado?.primer_apellido || !clienteEditado?.segundo_apellido ||
+        !clienteEditado?.celular || !clienteEditado?.direccion || !clienteEditado?.cedula)
+        {
+      setErrorCarga("Por favor, completa todos los campos antes de guardar.");
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(`http://127.0.0.1:3000/api/actualizarcliente/${clienteEditado.id_cliente}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          primer_nombre: clienteEditado.primer_nombre,
+          segundo_nombre: clienteEditado.segundo_nombre,
+          primer_apellido: clienteEditado.primer_apellido,
+          segundo_apellido: clienteEditado.segundo_apellido,
+          celular: clienteEditado.celular,
+          direccion: clienteEditado.direccion,
+          cedula: clienteEditado.cedula,
+        }),
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al actualizar el cliente');
+      }
+
+      await obtenerClientes();
+      setMostrarModalEdicion(false);
+      setClienteEditado(null);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
+  const abrirModalEdicion = (cliente) => {
+    setClienteEditado(cliente);
+    setMostrarModalEdicion(true);
   };
 
   // Renderizado de la vista
@@ -132,9 +232,15 @@ const Clientes = () => {
 
         {/* Pasa los estados como props al componente TablaClientess */}
         <TablaClientes 
-          clientes={clientesFiltrados} 
+          clientes={clientesPaginados} 
           cargando={cargando} 
-          error={errorCarga} 
+          error={errorCarga}
+          totalElementos={listaClientes.length} // Total de elementos
+          elementosPorPagina={elementosPorPagina} // Elementos por página
+          paginaActual={paginaActual} // Página actual
+          establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
+          abrirModalEliminacion={abrirModalEliminacion} // Método para abrir modal de eliminación
+          abrirModalEdicion={abrirModalEdicion} // Método para abrir modal de edición
         />
 
         <ModalRegistroClientes
@@ -143,6 +249,21 @@ const Clientes = () => {
           nuevoCliente={nuevoCliente}
           manejarCambioInput={manejarCambioInput}
           agregarCliente={agregarCliente}
+          errorCarga={errorCarga}
+        />
+
+        <ModalEliminacionCliente
+          mostrarModalEliminacion={mostrarModalEliminacion}
+          setMostrarModalEliminacion={setMostrarModalEliminacion}
+          eliminarCliente={eliminarCliente}
+        />
+
+        <ModalEdicionCliente
+          mostrarModalEdicion={mostrarModalEdicion}
+          setMostrarModalEdicion={setMostrarModalEdicion}
+          clienteEditado={clienteEditado}
+          manejarCambioInputEdicion={manejarCambioInputEdicion}
+          actualizarCliente={actualizarCliente}
           errorCarga={errorCarga}
         />
       </Container>

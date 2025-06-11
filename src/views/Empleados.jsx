@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import TablaEmpleados from '../components/empleados/TablaEmpleados.jsx'; // Ajustado para empleados
 import ModalRegistroEmpleado from '../components/empleados/ModalRegistroEmpleado.jsx'; // Ajustado para empleados
 import CuadroBusquedas from '../components/busquedas/CuadroBusquedas.jsx';
+import ModalEliminacionEmpleado from '../components/empleados/ModalEliminacionEmpleado.jsx';
+import ModalEdicionEmpleado from '../components/empleados/ModalEdicionEmpleado.jsx';
 import { Container, Button, Row, Col } from "react-bootstrap";
 
 // Declaración del componente Empleados
@@ -19,8 +21,8 @@ const Empleados = () => {
     primer_apellido: '',
     segundo_apellido: '',
     celular: '',
-    direccion: '',
-    cedula: ''
+    cargo: '',
+    fecha_contratacion: new Date()
   });
   
   const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
@@ -28,6 +30,14 @@ const Empleados = () => {
 
   const [paginaActual, establecerPaginaActual] = useState(1);
   const elementosPorPagina = 4; // Número de elementos por página
+
+  //Eliminación
+  const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+  const [empleadoAEliminar, setEmpleadoAEliminar] = useState(null);
+  
+  //Edición
+  const [empleadoEditado, setEmpleadoEditado] = useState(null);
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   
   const obtenerEmpleados = async () => {
     try {
@@ -61,8 +71,8 @@ const Empleados = () => {
 
   // Manejo la inserción de un nuevo empleado
   const agregarEmpleado = async () => {
-    if (!nuevoEmpleado.primer_nombre || !nuevoEmpleado.primer_apellido || !nuevoEmpleado.celular || !nuevoEmpleado.direccion || !nuevoEmpleado.cedula) {
-      setErrorCarga("Por favor, completa los campos obligatorios (primer nombre, primer apellido, celular, direccion y cedula).");
+    if (!nuevoEmpleado.primer_nombre || !nuevoEmpleado.primer_apellido || !nuevoEmpleado.segundo_nombre || !nuevoEmpleado.segundo_apellido || !nuevoEmpleado.celular || !nuevoEmpleado.cargo || !nuevoEmpleado.fecha_contratacion) {
+      setErrorCarga("Por favor, completa los campos obligatorios (primer nombre, primer apellido, celular, cargo y fecha).");
       return;
     }
 
@@ -86,8 +96,8 @@ const Empleados = () => {
         primer_apellido: '',
         segundo_apellido: '',
         celular: '',
-        direccion: '',
-        cedula: ''
+        cargo: '',
+        fecha_contratacion: new Date()
       });
       setMostrarModal(false);
       setErrorCarga(null);
@@ -108,17 +118,97 @@ const Empleados = () => {
         empleado.primer_apellido.toLowerCase().includes(texto) ||
         (empleado.segundo_apellido && empleado.segundo_apellido.toLowerCase().includes(texto)) ||
         empleado.celular.toLowerCase().includes(texto) ||
-        empleado.direccion.toLowerCase().includes(texto) ||
-        empleado.cedula.toString().toLowerCase().includes(texto)
+        empleado.cargo.toLowerCase().includes(texto)
     );
     setEmpleadosFiltrados(filtrados);
   };
 
   // Calcular elementos paginados
-const empleadosPaginados = empleadosFiltrados.slice(
-  (paginaActual - 1) * elementosPorPagina,
-   paginaActual * elementosPorPagina
-);
+  const empleadosPaginados = empleadosFiltrados.slice(
+    (paginaActual - 1) * elementosPorPagina,
+    paginaActual * elementosPorPagina
+  );
+
+  const eliminarEmpleado = async () => {
+    if (!empleadoAEliminar) return;
+
+    try {
+      const respuesta = await fetch(`http://127.0.0.1:3000/api/eliminarempleado/${empleadoAEliminar.id_empleado}`, {
+        method: 'DELETE',
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al eliminar el empleado');
+      }
+
+      await obtenerEmpleados(); // Refresca la lista
+      setMostrarModalEliminacion(false);
+      establecerPaginaActual(1); // Regresa a la primera página
+      setEmpleadoAEliminar(null);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
+  const abrirModalEliminacion = (empleado) => {
+    setEmpleadoAEliminar(empleado);
+    setMostrarModalEliminacion(true);
+  };
+
+  const manejarCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
+    setEmpleadoEditado(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const actualizarEmpleado = async () => {
+    if (!empleadoEditado?.primer_nombre || !empleadoEditado?.segundo_nombre ||
+        !empleadoEditado?.primer_apellido || !empleadoEditado?.segundo_apellido ||
+        !empleadoEditado?.celular ||
+        !empleadoEditado?.cargo || !empleadoEditado?.fecha_contratacion)
+        {
+      setErrorCarga("Por favor, completa todos los campos antes de guardar.");
+        
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(`http://127.0.0.1:3000/api/actualizarempleado/${empleadoEditado.id_empleado}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          primer_nombre: empleadoEditado.primer_nombre,
+          segundo_nombre: empleadoEditado.segundo_nombre,
+          primer_apellido: empleadoEditado.primer_apellido,
+          segundo_apellido: empleadoEditado.segundo_apellido,
+          celular: empleadoEditado.celular,
+          cargo: empleadoEditado.cargo,
+          fecha_contratacion: empleadoEditado.fecha_contratacion,
+        }),
+      });
+
+      if (!respuesta.ok) {
+        throw new Error('Error al actualizar el empleado');
+      }
+
+      await obtenerEmpleados();
+      setMostrarModalEdicion(false);
+      setEmpleadoEditado(null);
+      setErrorCarga(null);
+    } catch (error) {
+      setErrorCarga(error.message);
+    }
+  };
+
+  const abrirModalEdicion = (empleado) => {
+    setEmpleadoEditado(empleado);
+    setMostrarModalEdicion(true);
+  };
 
   // Renderizado de la vista
   return (
@@ -156,6 +246,8 @@ const empleadosPaginados = empleadosFiltrados.slice(
           elementosPorPagina={elementosPorPagina} // Elementos por página
           paginaActual={paginaActual} // Página actual
           establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
+          abrirModalEliminacion={abrirModalEliminacion} // Método para abrir modal de eliminación
+          abrirModalEdicion={abrirModalEdicion} // Método para abrir modal de edición
         />
 
         <ModalRegistroEmpleado
@@ -164,6 +256,21 @@ const empleadosPaginados = empleadosFiltrados.slice(
           nuevoEmpleado={nuevoEmpleado}
           manejarCambioInput={manejarCambioInput}
           agregarEmpleado={agregarEmpleado}
+          errorCarga={errorCarga}
+        />
+
+        <ModalEliminacionEmpleado
+          mostrarModalEliminacion={mostrarModalEliminacion}
+          setMostrarModalEliminacion={setMostrarModalEliminacion}
+          eliminarEmpleado={eliminarEmpleado}
+        />
+
+        <ModalEdicionEmpleado
+          mostrarModalEdicion={mostrarModalEdicion}
+          setMostrarModalEdicion={setMostrarModalEdicion}
+          empleadoEditado={empleadoEditado}
+          manejarCambioInputEdicion={manejarCambioInputEdicion}
+          actualizarEmpleado={actualizarEmpleado}
           errorCarga={errorCarga}
         />
       </Container>

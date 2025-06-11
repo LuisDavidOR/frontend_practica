@@ -373,7 +373,7 @@ const Productos = () => {
             <Button
               className="mb-3"
               onClick={generarPDFProductos}
-              variant='secondary'
+              variant='danger'
               style={{ width: "100%" }}
             >
               Generar reporte PDF
@@ -384,7 +384,7 @@ const Productos = () => {
             <Button
               className="mb-3"
               onClick={exportarExcelProductos}
-              variant='secondary'
+              variant='success'
               style={{ width: "100%" }}
             >
               Generar Excel

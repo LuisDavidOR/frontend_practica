@@ -1,26 +1,24 @@
-// ModalRegistroCategoria.jsx
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
-//Form es para darle apariencia
-//Button es para el boton del registro
 
-const ModalRegistroEmpleado = ({
-  mostrarModal,
-  setMostrarModal,
-  nuevoEmpleado,
-  manejarCambioInput,
-  agregarEmpleado,
+const ModalEdicionCliente = ({
+  mostrarModalEdicion,
+  setMostrarModalEdicion,
+  clienteEditado,
+  manejarCambioInputEdicion,
+  actualizarCliente,
   errorCarga,
 }) => {
 
   const validacionFormulario = () => {
     return(
-      nuevoEmpleado.primer_nombre.trim() !== "" &&
-      nuevoEmpleado.segundo_nombre.trim() !== "" &&
-      nuevoEmpleado.primer_apellido.trim() !== "" &&
-      nuevoEmpleado.segundo_apellido.trim() !== "" &&
-      nuevoEmpleado.celular.trim() !== "" &&
-      nuevoEmpleado.cargo.trim() !== ""
+      clienteEditado?.primer_nombre.trim() !== "" &&
+      clienteEditado?.segundo_nombre.trim() !== "" &&
+      clienteEditado?.primer_apellido.trim() !== "" &&
+      clienteEditado?.segundo_apellido.trim() !== "" &&
+      clienteEditado?.celular.trim() !== "" &&
+      clienteEditado?.direccion.trim() !== "" &&
+      clienteEditado?.cedula.trim() !== "" 
     );
   };
 
@@ -50,110 +48,103 @@ const ModalRegistroEmpleado = ({
       e.preventDefault(); //Evita que se escriba el carácter
     }
   };
+
   return (
-    <Modal show={mostrarModal} onHide={() => setMostrarModal(false)}>
+    <Modal show={mostrarModalEdicion} onHide={() => setMostrarModalEdicion(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Registro de un nuevo Empleado</Modal.Title>
+        <Modal.Title>Actualizar Cliente</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3" controlId="formprimer_nombreEmpleado">
+          <Form.Group className="mb-3" controlId="formPrimerNombreCliente">
             <Form.Label>Primer Nombre</Form.Label>
             <Form.Control
               type="text"
               name="primer_nombre"
-              value={nuevoEmpleado.primer_nombre}
-              onChange={manejarCambioInput}
+              value={clienteEditado?.primer_nombre || ''}
+              onChange={manejarCambioInputEdicion}
               onKeyDown={validarLetras}
               placeholder="Ingresa el primer nombre (máx. 20 caracteres)"
               maxLength={20}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formsegundo_nombreEmpleado">
+          <Form.Group className="mb-3" controlId="formSegundoNombreCliente">
             <Form.Label>Segundo Nombre</Form.Label>
             <Form.Control
               type="text"
               name="segundo_nombre"
-              value={nuevoEmpleado.segundo_nombre}
-              onChange={manejarCambioInput}
+              value={clienteEditado?.segundo_nombre || ''}
+              onChange={manejarCambioInputEdicion}
               onKeyDown={validarLetras}
               placeholder="Ingresa el segundo nombre (máx. 20 caracteres)"
               maxLength={20}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formprimer_apellidoEmpleado">
-            <Form.Label>Primer apellido</Form.Label>
+          <Form.Group className="mb-3" controlId="formPrimerApellidoCliente">
+            <Form.Label>Primer Apellido</Form.Label>
             <Form.Control
               type="text"
               name="primer_apellido"
-              value={nuevoEmpleado.primer_apellido}
-              onChange={manejarCambioInput}
+              value={clienteEditado?.primer_apellido || ''}
+              onChange={manejarCambioInputEdicion}
               onKeyDown={validarLetras}
               placeholder="Ingresa el primer apellido (máx. 20 caracteres)"
               maxLength={20}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formsegundo_apellidoEmpleado">
-            <Form.Label>Segundo apellido</Form.Label>
+          <Form.Group className="mb-3" controlId="formSegundoApellidoCliente">
+            <Form.Label>Segundo Apellido</Form.Label>
             <Form.Control
               type="text"
               name="segundo_apellido"
-              value={nuevoEmpleado.segundo_apellido}
-              onChange={manejarCambioInput}
+              value={clienteEditado?.segundo_apellido || ''}
+              onChange={manejarCambioInputEdicion}
               onKeyDown={validarLetras}
               placeholder="Ingresa el segundo apellido (máx. 20 caracteres)"
               maxLength={20}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formcelularEmpleado">
+          <Form.Group className="mb-3" controlId="formCelularCliente">
             <Form.Label>Celular</Form.Label>
             <Form.Control
               type="text"
               name="celular"
-              value={nuevoEmpleado.celular}
-              onChange={manejarCambioInput}
+              value={clienteEditado?.celular || ''}
+              onChange={manejarCambioInputEdicion}
               onKeyDown={validarNumeros}
-              placeholder="Ingresa el celular (máx. 12 caracteres)"
-              maxLength={12}
+              placeholder="Ingresa el celular (máx. 8 caracteres)"
+              maxLength={8}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formcargoEmpleado">
-            <Form.Label>Cargo</Form.Label>
+          <Form.Group className="mb-3" controlId="formDireccionCliente">
+            <Form.Label>Dirección</Form.Label>
             <Form.Control
               type="text"
-              name="cargo"
-              value={nuevoEmpleado.cargo}
-              onChange={manejarCambioInput}
-              onKeyDown={validarLetras}
-              placeholder="Ingresa el cargo (máx. 20 caracteres)"
-              maxLength={20}
+              name="direccion"
+              value={clienteEditado?.direccion || ''}
+              onChange={manejarCambioInputEdicion}
+              placeholder="Ingresa la dirección (máx. 150 caracteres)"
+              maxLength={150}
               required
             />
           </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formFechaEmpleado">
-            <Form.Label>Fecha de Contratación</Form.Label>
-            <br></br>
+          <Form.Group className="mb-3" controlId="formCedulaCliente">
+            <Form.Label>Cédula</Form.Label>
             <Form.Control
-              type="date"
-              name="fecha_contratacion"
-              value={nuevoEmpleado.fecha_contratacion}
-              onChange={manejarCambioInput}
-              className="form-control"
+              type="text"
+              name="cedula"
+              value={clienteEditado?.cedula || ''}
+              onChange={manejarCambioInputEdicion}
+              placeholder="Ingresa la cédula (máx. 14 caracteres)"
+              maxLength={14}
               required
             />
           </Form.Group>
-
           {errorCarga && (
             <div className="text-danger mt-2">{errorCarga}</div>
           )}
@@ -161,16 +152,16 @@ const ModalRegistroEmpleado = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => {
-          setMostrarModal(false);
+          setMostrarModalEdicion(false);
         }}>
           Cancelar
         </Button>
-        <Button variant="primary" disabled={!validacionFormulario()} onClick={agregarEmpleado}>
-          Guardar Empleado
+        <Button variant="primary" disabled={!validacionFormulario()} onClick={actualizarCliente}>
+          Guardar Cambios
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ModalRegistroEmpleado;
+export default ModalEdicionCliente;

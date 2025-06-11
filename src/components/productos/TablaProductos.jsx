@@ -62,7 +62,7 @@ const TablaProductos = ({
             </td>
             <td>
               <Button
-                variant="outline-secondary"
+                variant="outline-success"
                 size="sm"
                 className="me-2"
                 onClick={() => generarPDFDetalleProducto(producto)}

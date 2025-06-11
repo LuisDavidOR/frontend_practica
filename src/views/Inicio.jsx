@@ -29,8 +29,14 @@ const Inicio = () => {
 
   return (
     <Container>
-      <h1>¡Bienvenido, {nombreUsuario}!</h1>
-      <Image src={Portada} fluid rounded />
+      <h1 className="text-center">¡Bienvenido, {nombreUsuario}!</h1>
+      <Image
+        src={Portada}
+        className="d-block mx-auto"
+        style={{ width: "100%", maxWidth: "400px", height: "auto" }}
+        fluid
+        rounded
+      />
       <Proposito />
     </Container>
   );

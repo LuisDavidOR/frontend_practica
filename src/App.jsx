@@ -16,6 +16,7 @@ import Estadisticas from "./views/Estadisticas";
 import Dashboard from "./views/Dashboard";
 import RutaProtegida from "./components/rutas/RutaProtegida";
 import PiePagina from "./components/infopie/PiePagina";
+import Empleados from "./views/Empleados";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/inicio" element={<RutaProtegida vista={<Inicio />} />} />
           <Route path="/servicios" element={<RutaProtegida vista={<Servicios />} />} />
           <Route path="/clientes" element={<RutaProtegida vista={<Clientes />} />} />
+          <Route path="/empleados" element={<RutaProtegida vista={<Empleados />} />} />
           <Route path="/productos" element={<RutaProtegida vista={<Productos />} />} />
           <Route path="/categorias" element={<RutaProtegida vista={<Categorias />} />} />
           <Route path="/usuarios" element={<RutaProtegida vista={<Usuarios />} />} />
