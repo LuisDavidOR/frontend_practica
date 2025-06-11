@@ -45,31 +45,31 @@ const ModalDetallesVenta = ({ mostrarModal, setMostrarModal, detalles, cargandoD
             </div>
 
             <div className="d-block d-md-none">
-                  {detalles.map((detalle) => (
-                    <Card key={detalle.id_detalle_venta} className="mb-2 shadow-sm">
-                      <Card.Body>
-                        <Card.Title> <strong>ID:</strong> {detalle.id_detalle_venta} </Card.Title>
-                        <Card.Text><strong>Producto:</strong> {detalle.nombre_producto}</Card.Text>
-                        <Card.Text><strong>Descripción:</strong> {detalle.descripcion_producto}</Card.Text>
-                        <Card.Text><strong>Cantidad:</strong> {detalle.cantidad}</Card.Text>
-                        <Card.Text><strong>Precio Unitario:</strong> {detalle.precio_unitario}</Card.Text>
-                        <Card.Text><strong>Subtotal:</strong> C$ {detalle.subtotal.toFixed(2)}</Card.Text>
-                        <div>
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            className="me-2"
-                            onClick={() => abrirModalActualizacion(detalle)}
-                          >
-                            <i className="bi bi-pencil"></i>
-                          </Button>
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => abrirModalEliminacion(detalle)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </Button>
+              {detalles.map((detalle) => (
+                <Card key={detalle.id_detalle_venta} className="mb-2 shadow-sm">
+                  <Card.Body>
+                    <Card.Title> <strong>ID:</strong> {detalle.id_detalle_venta} </Card.Title>
+                    <Card.Text><strong>Producto:</strong> {detalle.nombre_producto}</Card.Text>
+                    <Card.Text><strong>Descripción:</strong> {detalle.descripcion_producto}</Card.Text>
+                    <Card.Text><strong>Cantidad:</strong> {detalle.cantidad}</Card.Text>
+                    <Card.Text><strong>Precio Unitario:</strong> {detalle.precio_unitario}</Card.Text>
+                    <Card.Text><strong>Subtotal:</strong> C$ {detalle.subtotal.toFixed(2)}</Card.Text>
+                    <div>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => abrirModalActualizacion(detalle)}
+                      >
+                        <i className="bi bi-pencil"></i>
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => abrirModalEliminacion(detalle)}
+                      >
+                        <i className="bi bi-trash"></i>
+                        </Button>
                         </div>
                       </Card.Body>
                     </Card>

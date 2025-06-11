@@ -1,7 +1,6 @@
 //ModalDetallesCompra.jsx
-
 import React from 'react';
-import { Modal, Table, Button } from 'react-bootstrap';
+import { Modal, Table, Button, Card } from 'react-bootstrap';
 
 const ModalDetallesCompra = ({ mostrarModal, setMostrarModal, detalles, cargandoDetalles, errorDetalles }) => {
   return (
@@ -13,6 +12,7 @@ const ModalDetallesCompra = ({ mostrarModal, setMostrarModal, detalles, cargando
         {cargandoDetalles && <div>Cargando detalles...</div>}
         {errorDetalles && <div className="text-danger">Error: {errorDetalles}</div>}
         {!cargandoDetalles && !errorDetalles && detalles.length > 0 && (
+          <div className="d-none d-md-block">
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -33,6 +33,8 @@ const ModalDetallesCompra = ({ mostrarModal, setMostrarModal, detalles, cargando
               ))}
             </tbody>
           </Table>
+          </div>
+          
         )}
         {!cargandoDetalles && !errorDetalles && detalles.length === 0 && (
           <div>No hay detalles para esta compra.</div>
