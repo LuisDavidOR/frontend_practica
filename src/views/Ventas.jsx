@@ -6,6 +6,7 @@ import { Container, Button, Row, Col } from "react-bootstrap";
 import ModalDetallesVenta from '../components/detalles_ventas/ModalDetallesVenta';
 import ModalRegistroVenta from '../components/ventas/ModalRegistroVenta';
 import ModalActualizacionVenta from '../components/ventas/ModalActualizacionVenta';
+import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
 
 // Declaración del componente Ventas
 const Ventas = () => {
@@ -38,6 +39,12 @@ const Ventas = () => {
   const [ventaAEditar, setVentaAEditar] = useState(null);
   const [detallesEditados, setDetallesEditados] = useState([]);
 
+  const [ventasFiltradas, setVentasFiltradas] = useState([]);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+    
+  const [paginaActual, establecerPaginaActual] = useState(1);
+  const elementosPorPagina = 2; // Número de elementos por página
+
 
   const obtenerVentas = async () => {
     try {
@@ -47,6 +54,7 @@ const Ventas = () => {
       }
       const datos = await respuesta.json();
       setListaVentas(datos);    // Actualiza el estado con los datos
+      setVentasFiltradas(datos);
       setCargando(false);       // Indica que la carga terminó
     } catch (error) {
       setErrorCarga(error.message); // Guarda el mensaje de error
@@ -249,6 +257,25 @@ const Ventas = () => {
     }
   };
 
+  const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+    establecerPaginaActual(1);
+    
+    const filtrados = listaVentas.filter(
+      (venta) =>
+        venta.nombre_empleado.toLowerCase().includes(texto) ||
+        venta.nombre_cliente.toLowerCase().includes(texto)
+    );
+    setVentasFiltradas(filtrados);
+  };
+
+  // Calcular elementos paginados
+  const ventasPaginadas = ventasFiltradas.slice(
+    (paginaActual - 1) * elementosPorPagina,
+    paginaActual * elementosPorPagina
+  );
+
 
   // Renderizado de la vista
   return (
@@ -263,14 +290,24 @@ const Ventas = () => {
               Nueva Venta
             </Button>
           </Col>
+          <Col lg={6} md={8} sm={8} xs={7}>
+            <CuadroBusquedas
+              textoBusqueda={textoBusqueda}
+              manejarCambioBusqueda={manejarCambioBusqueda}
+            />
+          </Col>
         </Row>
         <br />
 
         {/* Pasa los estados como props al componente TablaVentas */}
         <TablaVentas
-          ventas={listaVentas}
+          ventas={ventasPaginadas}
           cargando={cargando}
           error={errorCarga}
+          totalElementos={listaVentas.length} // Total de elementos
+          elementosPorPagina={elementosPorPagina} // Elementos por página
+          paginaActual={paginaActual} // Página actual
+          establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
           obtenerDetalles={obtenerDetalles} // Pasar la función
           abrirModalEliminacion={abrirModalEliminacion}
           abrirModalActualizacion={abrirModalActualizacion}

@@ -1,6 +1,6 @@
 // Importaciones necesarias para el componente visual
 import React from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Card } from 'react-bootstrap';
 import Paginacion from '../ordenamiento/Paginacion';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -31,6 +31,7 @@ const TablaCategorias = ({
     className="d-flex flex-column justify-content-between"
     style={{ minHeight: "60vh" }} // ajusta el valor si querés más o menos altura mínima
   >
+    <div className="d-none d-md-block">
     <Table striped bordered hover responsive>
       <thead>
         <tr>
@@ -68,7 +69,36 @@ const TablaCategorias = ({
         ))}
       </tbody>
     </Table>
+    </div>
 
+    <div className="d-block d-md-none">
+          {categorias.map((categoria) => (
+            <Card key={categoria.id_categoria} className="mb-2 shadow-sm">
+              <Card.Body>
+                <Card.Title> <strong>ID:</strong> {categoria.id_categoria} </Card.Title>
+                <Card.Text><strong>Producto:</strong> {categoria.nombre_categoria}</Card.Text>
+                <Card.Text><strong>Descripción:</strong> {categoria.descripcion_categoria}</Card.Text>
+                <div>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => abrirModalActualizacion(categoria)}
+                  >
+                    <i className="bi bi-pencil"></i>
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => abrirModalEliminacion(categoria)}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
     {/* Paginación fijada abajo del contenedor de la tabla */}
     <div className="mt-auto">
       <Paginacion

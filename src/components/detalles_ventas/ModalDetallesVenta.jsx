@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Modal, Button, Table, Container } from 'react-bootstrap';
+import { Modal, Button, Table, Container, Card } from 'react-bootstrap';
 
 const ModalDetallesVenta = ({ mostrarModal, setMostrarModal, detalles, cargandoDetalles, errorDetalles }) => {
   return (
@@ -17,6 +17,7 @@ const ModalDetallesVenta = ({ mostrarModal, setMostrarModal, detalles, cargandoD
         {cargandoDetalles && <div>Cargando detalles...</div>}
         {!cargandoDetalles && !errorDetalles && detalles.length > 0 && (
           <Container>
+            <div className="d-none d-md-block">
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
@@ -41,6 +42,39 @@ const ModalDetallesVenta = ({ mostrarModal, setMostrarModal, detalles, cargandoD
                 ))}
               </tbody>
             </Table>
+            </div>
+
+            <div className="d-block d-md-none">
+                  {detalles.map((detalle) => (
+                    <Card key={detalle.id_detalle_venta} className="mb-2 shadow-sm">
+                      <Card.Body>
+                        <Card.Title> <strong>ID:</strong> {detalle.id_detalle_venta} </Card.Title>
+                        <Card.Text><strong>Producto:</strong> {detalle.nombre_producto}</Card.Text>
+                        <Card.Text><strong>Descripción:</strong> {detalle.descripcion_producto}</Card.Text>
+                        <Card.Text><strong>Cantidad:</strong> {detalle.cantidad}</Card.Text>
+                        <Card.Text><strong>Precio Unitario:</strong> {detalle.precio_unitario}</Card.Text>
+                        <Card.Text><strong>Subtotal:</strong> C$ {detalle.subtotal.toFixed(2)}</Card.Text>
+                        <div>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => abrirModalActualizacion(detalle)}
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => abrirModalEliminacion(detalle)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  ))}
+                </div>
           </Container>
         )}
       </Modal.Body>

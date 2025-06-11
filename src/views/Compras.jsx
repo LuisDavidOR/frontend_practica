@@ -5,6 +5,7 @@ import ModalDetallesCompra from '../components/detalles_compras/ModalDetallesCom
 import ModalEliminacionCompra from '../components/compras/ModalEliminacionCompra';
 import ModalRegistroCompra from '../components/compras/ModalRegistroCompra';
 import { Container, Button, Row, Col } from 'react-bootstrap';
+import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
 
 const Compras = () => {
   const [listaCompras, setListaCompras] = useState([]);
@@ -33,12 +34,19 @@ const Compras = () => {
   const [compraAEditar, setCompraAEditar] = useState(null);
   const [detallesEditados, setDetallesEditados] = useState([]);
 
+  const [comprasFiltradas, setComprasFiltradas] = useState([]);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+  
+  const [paginaActual, establecerPaginaActual] = useState(1);
+  const elementosPorPagina = 2; // Número de elementos por página
+
   const obtenerCompras = async () => {
     try {
       const respuesta = await fetch('http://localhost:3000/api/obtenercompras');
       if (!respuesta.ok) throw new Error('Error al cargar las compras');
       const datos = await respuesta.json();
       setListaCompras(datos);
+      setComprasFiltradas(datos);
       setCargando(false);
     } catch (error) {
       setErrorCarga(error.message);
@@ -206,6 +214,24 @@ const Compras = () => {
     }
   };
 
+  const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+    establecerPaginaActual(1);
+    
+    const filtrados = listaCompras.filter(
+      (compra) =>
+        compra.nombre_empleado.toLowerCase().includes(texto)
+    );
+    setComprasFiltradas(filtrados);
+  };
+
+  // Calcular elementos paginados
+  const comprasPaginadas = comprasFiltradas.slice(
+    (paginaActual - 1) * elementosPorPagina,
+    paginaActual * elementosPorPagina
+  );
+
   return (
     <Container className="mt-5">
       <br />
@@ -216,12 +242,22 @@ const Compras = () => {
             Nueva Compra
           </Button>
         </Col>
+        <Col lg={6} md={8} sm={8} xs={7}>
+            <CuadroBusquedas
+              textoBusqueda={textoBusqueda}
+              manejarCambioBusqueda={manejarCambioBusqueda}
+            />
+          </Col>
       </Row>
       <br />
       <TablaCompras
-        compras={listaCompras}
+        compras={comprasPaginadas}
         cargando={cargando}
         error={errorCarga}
+        totalElementos={listaCompras.length} // Total de elementos
+        elementosPorPagina={elementosPorPagina} // Elementos por página
+        paginaActual={paginaActual} // Página actual
+        establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
         obtenerDetalles={obtenerDetalles}
         abrirModalEliminacion={abrirModalEliminacion}
         abrirModalActualizacion={abrirModalActualizacion}
